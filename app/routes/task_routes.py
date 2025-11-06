@@ -1,7 +1,7 @@
 from ..models.task import Task
 from flask import Blueprint, abort, make_response, request, Response,jsonify
 from ..db import db
-from .routes_utilities import validate_model,create_model,get_models_with_filters
+from .route_utilities import validate_model,create_model,get_models_with_filters
 from datetime import datetime
 
 bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
@@ -14,7 +14,8 @@ def create_task():
     try:
         new_task = Task.from_dict(request_body)
     except KeyError:
-        return jsonify({"details": "Invalid data"}), 400
+        #return jsonify({"details": "Invalid data"}), 400
+        abort(make_response({"details": "Invalid data"}, 400))
     
     db.session.add(new_task)
     db.session.commit()
