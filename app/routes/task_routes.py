@@ -1,8 +1,9 @@
 from ..models.task import Task
-from flask import Blueprint, abort, make_response, request, Response,jsonify
+from flask import Blueprint, abort, make_response, request, Response,jsonify,current_app
 from ..db import db
 from .route_utilities import validate_model,create_model,get_models_with_filters
 from datetime import datetime
+import  requests,os
 
 bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
 
@@ -104,12 +105,12 @@ def del_task(id):
 
 
 
-@bp.patch("/<id>/mark_complete")
-def mark_complete(id):
-    task = validate_model(Task, id)
-    task.completed_at = datetime.utcnow()
-    db.session.commit()
-    return Response(status=204, mimetype="application/json")
+# @bp.patch("/<id>/mark_complete")
+# def mark_complete(id):
+#     task = validate_model(Task, id)
+#     task.completed_at = datetime.utcnow()
+#     db.session.commit()
+#     return Response(status=204, mimetype="application/json")
 
 
 @bp.patch("/<id>/mark_incomplete")
@@ -119,3 +120,32 @@ def mark_incomplete(id):
     task.completed_at = None
     db.session.commit()
     return Response(status=204, mimetype="application/json")
+
+
+
+@bp.patch("/<id>/mark_complete")
+def mark_task_complete(id):
+    task = validate_model(Task, id)
+    #task = Task.query.get(id)
+    
+    
+    task.completed_at = datetime.utcnow()
+    db.session.commit()
+
+  
+    slack_token = os.environ.get("SLACK_BOT_TOKEN")
+    slack_channel = os.environ.get("SLACK_CHANNEL", "#test_task_slack_api")
+    message = f"Task *{task.title}* has been completed!"
+    
+    if not current_app.config.get("TESTING"):
+        response = requests.post(
+            "https://slack.com/api/chat.postMessage",
+            headers={"Authorization": f"Bearer {slack_token}"},
+
+            json={"channel": slack_channel, "text": message}
+        )
+    if current_app.config.get("TESTING"):
+        return Response(status=204, mimetype="application/json")
+    
+
+    return jsonify({"task": task.to_dict()}), 200

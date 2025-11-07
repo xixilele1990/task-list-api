@@ -5,6 +5,9 @@ from app.routes.task_routes import bp as tasks_bp
 from app.routes.goal_routes import bp as goals_bp
 import os
 
+from dotenv import load_dotenv
+load_dotenv()
+
 def create_app(config=None):
     app = Flask(__name__)
 
