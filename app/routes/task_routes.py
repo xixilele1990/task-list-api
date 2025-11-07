@@ -2,7 +2,7 @@ from ..models.task import Task
 from flask import Blueprint, abort, make_response, request, Response,jsonify,current_app
 from ..db import db
 from .route_utilities import validate_model,create_model,get_models_with_filters
-from datetime import datetime
+from datetime import datetime,timezone
 import  requests,os
 
 bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
@@ -129,7 +129,7 @@ def mark_task_complete(id):
     #task = Task.query.get(id)
     
     
-    task.completed_at = datetime.utcnow()
+    task.completed_at = datetime.now(timezone.utc)
     db.session.commit()
 
   
