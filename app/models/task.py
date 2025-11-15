@@ -31,8 +31,6 @@ class Task(db.Model):
         
         return task_dict
         
-
-
     @classmethod
     def from_dict(cls, data_dict):
         if "title" not in data_dict:

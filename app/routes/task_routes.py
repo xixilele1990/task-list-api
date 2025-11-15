@@ -22,9 +22,7 @@ def create_task():
     db.session.commit()
     return new_task.to_dict(), 201
 
-
 @bp.get("")
-
 def get_all_tasks():
     query = db.select(Task)
 
@@ -65,19 +63,15 @@ def get_all_tasks():
         
     return result_list or []
 
-
 @bp.get("/<id>")
-
 def get_one_task(id):
     
     task =validate_model(Task,id)
     return task.to_dict()
 
-
 @bp.put("/<id>")
 def replace_task(id):
     task = validate_model(Task, id)
-    
     request_body = request.get_json()
     
     # if request_body["is_complete"]:
@@ -85,25 +79,16 @@ def replace_task(id):
     # else:
     #     task.completed_at = None
     task.title = request_body["title"]
-    
     task.description = request_body["description"]
-    
     db.session.commit()
-    
     return Response(status = 204,mimetype ="application/json")
 
 @bp.delete("/<id>")
 def del_task(id):
     task = validate_model(Task, id)
-    
     db.session.delete(task)
-    
     db.session.commit()
-    
     return Response(status = 204,mimetype ="application/json")
-
-
-
 
 # @bp.patch("/<id>/mark_complete")
 # def mark_complete(id):
@@ -112,27 +97,20 @@ def del_task(id):
 #     db.session.commit()
 #     return Response(status=204, mimetype="application/json")
 
-
 @bp.patch("/<id>/mark_incomplete")
 def mark_incomplete(id):
     task = validate_model(Task, id)
-
     task.completed_at = None
     db.session.commit()
     return Response(status=204, mimetype="application/json")
-
-
 
 @bp.patch("/<id>/mark_complete")
 def mark_task_complete(id):
     task = validate_model(Task, id)
     #task = Task.query.get(id)
-    
-    
     task.completed_at = datetime.now(timezone.utc)
     db.session.commit()
 
-  
     slack_token = os.environ.get("SLACK_BOT_TOKEN")
     slack_channel = os.environ.get("SLACK_CHANNEL", "#test_task_slack_api")
     message = f"Task *{task.title}* has been completed!"
