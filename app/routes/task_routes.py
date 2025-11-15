@@ -63,7 +63,7 @@ def get_all_tasks():
 
     result_list =[task.to_dict()for task in tasks]
         
-    return jsonify(result_list or []),200
+    return result_list or []
 
 
 @bp.get("/<id>")
@@ -144,8 +144,8 @@ def mark_task_complete(id):
 
             json={"channel": slack_channel, "text": message}
         )
-    if current_app.config.get("TESTING"):
-        return Response(status=204, mimetype="application/json")
+    #if current_app.config.get("TESTING"):
+    return Response(status=204, mimetype="application/json")
     
 
-    return jsonify({"task": task.to_dict()}), 200
+    

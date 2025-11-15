@@ -163,3 +163,15 @@ def test_route_utilities_create_model_with_goal_missing_title(client):
     # *****************************************************************************
     # **Complete test with assertion about status code response body***************
     # *****************************************************************************
+
+
+
+def test_mark_complete_response_consistency(client, one_task):
+    response = client.patch("/tasks/1/mark_complete")
+
+    #print("Test mode response status:", response.status_code)
+    #print("Test mode response mimetype:", response.mimetype)
+    #print("Test mode response data:", response.get_data(as_text=True))
+
+    assert response.status_code == 204
+    assert response.mimetype == "application/json"
