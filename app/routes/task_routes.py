@@ -1,5 +1,5 @@
 from ..models.task import Task
-from flask import Blueprint, abort, make_response, request, Response,jsonify,current_app
+from flask import Blueprint, abort, make_response, request, Response,current_app
 from ..db import db
 from .route_utilities import validate_model,create_model,get_models_with_filters
 from datetime import datetime,timezone
@@ -11,22 +11,13 @@ bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
 def create_task():
     
     request_body = request.get_json()
-
-    try:
-        new_task = Task.from_dict(request_body)
-    except KeyError:
-        #return jsonify({"details": "Invalid data"}), 400
-        abort(make_response({"details": "Invalid data"}, 400))
-    
-    db.session.add(new_task)
-    db.session.commit()
-    return new_task.to_dict(), 201
-
+    return create_model(Task,request_body)
+   
 @bp.get("")
 def get_all_tasks():
     query = db.select(Task)
-
     id_param = request.args.get("id")
+    
     if id_param:
         query = query.where(Task.id == int(id_param))
 
@@ -124,6 +115,4 @@ def mark_task_complete(id):
         )
     #if current_app.config.get("TESTING"):
     return Response(status=204, mimetype="application/json")
-    
-
     

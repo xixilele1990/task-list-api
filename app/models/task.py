@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey
 from ..db import db
 from sqlalchemy import String, Date
 from datetime import datetime
-from flask import Blueprint, abort, make_response, request, Response,jsonify
+from flask import Blueprint, abort, make_response, request, Response
 from typing import Optional
 
 class Task(db.Model):
