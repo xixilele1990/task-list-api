@@ -39,18 +39,17 @@ def get_all_tasks():
         
         query = query.where(Task.completed_at.is_(None))
 
-    #query = query.order_by(Task.id)
     if sort_param =="asc":
             query = query = query.order_by(Task.title.asc())
     elif sort_param == "desc":
         query = query.order_by(Task.title.desc())
     else:
         query = query.order_by(Task.id)
+        
     tasks = db.session.scalars(query)
 
     result_list = []
-
-    result_list =[task.to_dict()for task in tasks]
+    result_list =[task.to_dict() for task in tasks]
         
     return result_list or []
 
@@ -65,40 +64,35 @@ def replace_task(id):
     task = validate_model(Task, id)
     request_body = request.get_json()
     
-    # if request_body["is_complete"]:
-    #     task.completed_at = datetime.utcnow()
-    # else:
-    #     task.completed_at = None
     task.title = request_body["title"]
     task.description = request_body["description"]
+    
     db.session.commit()
-    return Response(status = 204,mimetype ="application/json")
+    
+    return Response(status=204, mimetype="application/json")
 
 @bp.delete("/<id>")
 def del_task(id):
     task = validate_model(Task, id)
+    
     db.session.delete(task)
     db.session.commit()
-    return Response(status = 204,mimetype ="application/json")
+    
+    return Response(status=204, mimetype="application/json")
 
-# @bp.patch("/<id>/mark_complete")
-# def mark_complete(id):
-#     task = validate_model(Task, id)
-#     task.completed_at = datetime.utcnow()
-#     db.session.commit()
-#     return Response(status=204, mimetype="application/json")
 
 @bp.patch("/<id>/mark_incomplete")
 def mark_incomplete(id):
     task = validate_model(Task, id)
     task.completed_at = None
+    
     db.session.commit()
+    
     return Response(status=204, mimetype="application/json")
 
 @bp.patch("/<id>/mark_complete")
 def mark_task_complete(id):
     task = validate_model(Task, id)
-    #task = Task.query.get(id)
     task.completed_at = datetime.now(timezone.utc)
     db.session.commit()
 
@@ -113,6 +107,6 @@ def mark_task_complete(id):
 
             json={"channel": slack_channel, "text": message}
         )
-    #if current_app.config.get("TESTING"):
+        
     return Response(status=204, mimetype="application/json")
     

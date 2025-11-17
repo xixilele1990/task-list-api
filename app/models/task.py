@@ -22,7 +22,6 @@ class Task(db.Model):
         task_dict = {"id": self.id,
                 "title":self.title,
                 "description":self.description,
-                #"is_complete":self.completed_at if self.completed_at else False
                 "is_complete": self.completed_at is not None}
         
         if self.goal_id is not None:
@@ -37,8 +36,8 @@ class Task(db.Model):
            
             raise KeyError("title")
         if "description" not in data_dict:
-            #abort(make_response({"details": "Invalid data"}, 400))
             raise KeyError("description")
+        
         return cls(
             title=data_dict["title"],
             description=data_dict["description"],
