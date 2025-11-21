@@ -6,12 +6,13 @@ from sqlalchemy import String, Date
 from datetime import datetime
 from flask import Blueprint, abort, make_response, request, Response
 from typing import Optional
+from datetime import date
 
 class Task(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str] = mapped_column(String(255))
-    completed_at:Mapped[datetime.date] = mapped_column(Date, nullable=True)
+    completed_at:Mapped[date] = mapped_column(Date, nullable=True)
 
     goal_id: Mapped[Optional[int]] = mapped_column(ForeignKey("goal.id"))
     goal: Mapped[Optional["Goal"]] = relationship(back_populates="tasks")
